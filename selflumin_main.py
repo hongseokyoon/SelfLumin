@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import cgi
-import selumin
-import codecs
 import xml.dom.minidom
+import selumin
+import zipfile
+import os
 
 PostData = cgi.FieldStorage()
 TwitList = selumin.user_timeline(PostData['getid'].value)
@@ -15,8 +16,6 @@ TwitList = selumin.user_timeline(PostData['getid'].value)
 newdoc = xml.dom.minidom.Document()  
 TopNode = newdoc.createElement('twits')
 newdoc.appendChild(TopNode)
-
-
 
 print 'Content-Type text/html\n\n'
 print '<html>'
@@ -33,10 +32,11 @@ print '.content {padding: 10px;background: #ddd;}'
 print '</style>'
 print '</head>'
 print '<body>'
-
+print '<a href=./Download/' + PostData['getid'].value + '.zip>파일 다운로드</a>'
 for twit in TwitList:
   TwitDate = str(twit['date'])
   TwitText = twit['text'].encode('cp949')
+  TwitRTCount = str(twit['rt_count'])
   print '<div class="box">'
   print '    <b class="b1f"></b>'
   print '    <b class="b2f"></b>'
@@ -46,6 +46,8 @@ for twit in TwitList:
   print TwitDate
   print '<br>'
   print TwitText
+  print '<br>'
+  print 'RT Count : ' + TwitRTCount
   print '    </div>'
   print '    <b class="b4f"></b>'
   print '    <b class="b3f"></b>'
@@ -53,8 +55,7 @@ for twit in TwitList:
   print '    <b class="b1f"></b>'
   print '</div>'
   TwitNode = newdoc.createElement('twit')
-  TopNode.appendChild(TwitNode)
-  
+  TopNode.appendChild(TwitNode)  
 
   DateNode = newdoc.createElement('date')
   TwitNode.appendChild(DateNode)
@@ -68,6 +69,18 @@ for twit in TwitList:
 print '</body>'
 print '</html>'
 
-thefile = open('test.txt', 'w')
+if not os.path.isdir('./Download'):
+  os.mkdir('./Download')
+  
+FileName = './Download/' + PostData['getid'].value + '.txt'
+thefile = open(FileName, 'w')
 newdoc.writexml(thefile, indent='  ', addindent='  ', newl='\n')
 thefile.close()
+ZipFileName = './Download/' + PostData['getid'].value + '.zip'
+if os.path.isfile(ZipFileName):
+  os.remove(ZipFileName)
+thezipfile = zipfile.ZipFile(ZipFileName, 'w')
+thezipfile.write(FileName, os.path.basename(FileName), zipfile.ZIP_DEFLATED)
+thezipfile.close()
+if os.path.isfile(FileName):
+  os.remove(FileName)
