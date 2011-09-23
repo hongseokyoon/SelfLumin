@@ -7,12 +7,13 @@ import zipfile
 import os
 
 PostData = cgi.FieldStorage()
-TwitList = selumin.user_timeline(PostData['getid'].value)
-#XmlImpl = xml.dom.minidom.getDOMImplementation()
-#newdoc = XmlImpl.createDocument(None, 'some_tag', None)
-#top_element = newdoc.documentElement
-#text = newdoc.createTextNode('Some textual content.')
-#top_element.appendChild(text)
+PlatformType = PostData['platformtype'].value
+UserID = PostData['getid'].value
+TwitList = []
+if PlatformType == 'me2':
+  TwitList = selumin.user_timeline_me2(UserID)
+elif PlatformType == 'twitter'
+  TwitList = selumin.user_timeline(UserID)
 newdoc = xml.dom.minidom.Document()  
 TopNode = newdoc.createElement('twits')
 newdoc.appendChild(TopNode)
@@ -32,11 +33,16 @@ print '.content {padding: 10px;background: #ddd;}'
 print '</style>'
 print '</head>'
 print '<body>'
-print '<a href=./Download/' + PostData['getid'].value + '.zip>파일 다운로드</a>'
+print '<a href=./Download/' + UserID + '.zip>파일 다운로드</a>'
+RTCount = 0
+Me2Count = 0
 for twit in TwitList:
   TwitDate = str(twit['date'])
   TwitText = twit['text'].encode('cp949')
-  TwitRTCount = str(twit['rt_count'])
+  if PlatformType == 'me2':
+    Me2Count = twit['me2_count']
+  elif PlatformType == 'twitter'
+    RTCount = str(twit['rt_count'])
   print '<div class="box">'
   print '    <b class="b1f"></b>'
   print '    <b class="b2f"></b>'
@@ -46,8 +52,11 @@ for twit in TwitList:
   print TwitDate
   print '<br>'
   print TwitText
-  print '<br>'
-  print 'RT Count : ' + TwitRTCount
+  print '<br>'  
+  if PlatformType == 'me2':
+    print 'Me2 Count : ' + Me2Count
+  elif PlatformType == 'twitter'
+    print 'RT Count : ' + RTCount
   print '    </div>'
   print '    <b class="b4f"></b>'
   print '    <b class="b3f"></b>'
@@ -66,17 +75,26 @@ for twit in TwitList:
   TwitNode.appendChild(TextNode)
   NewText = newdoc.createTextNode(TwitText)
   TextNode.appendChild(NewText)
+  
+  CountNode = newdoc.createElement('count')
+  TwitNode.appendChild(CountNode)
+  CountText = 0
+  if PlatformType == 'me2':
+    CountText = Me2Count
+  elif PlatformType == 'twitter'
+    CountText = RTCount
+  NewCount = newdoc.createTextNode(CountText)
+  CountNode.appendChild(NewCount)
 print '</body>'
 print '</html>'
 
 if not os.path.isdir('./Download'):
-  os.mkdir('./Download')
-  
-FileName = './Download/' + PostData['getid'].value + '.txt'
+  os.mkdir('./Download')  
+FileName = './Download/' + UserID + '.txt'
 thefile = open(FileName, 'w')
 newdoc.writexml(thefile, indent='  ', addindent='  ', newl='\n')
 thefile.close()
-ZipFileName = './Download/' + PostData['getid'].value + '.zip'
+ZipFileName = './Download/' + UserID + '.zip'
 if os.path.isfile(ZipFileName):
   os.remove(ZipFileName)
 thezipfile = zipfile.ZipFile(ZipFileName, 'w')
