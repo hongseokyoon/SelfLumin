@@ -61,3 +61,8 @@ def user_timeline_me2(user_id):
     count   = 50 if total_posts - offset > 50 else total_posts - offset
     
   return twits
+  
+def split(l, n):
+  chunk_size  = len(l) / n
+  for i in range(0, chunk_size if chunk_size * n >= len(l) else chunk_size + 1):
+    yield l[i * n:i * n + n]
