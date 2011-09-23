@@ -1,0 +1,37 @@
+<html>
+<head>
+  <title>Backup Automation</title>
+  <script language="JavaScript">
+    function SendID()
+    {
+      var ID = document.mainform.getid.value;
+      if(ID == "")
+      {
+        alert("ID를 입력해 주세요.");
+        return 0;
+      }
+      document.mainform.submit();
+    }
+  </script>
+</head>
+<body>    
+  <table width=100% height=30px>
+    <tr>
+      <form name=mainform method=POST action="./selflumin_main.py" target=display>
+      <td valign=middle>  
+        <b>Team 자체발광 Burning Day Project</b><br><br>
+        * 확인할 ID를 입력해 주세요 : <input type=text name=getid size=30>
+        <input type=button name=getidbutton value="확인" onclick=SendID()>
+      </td>
+      </form>
+    </tr>
+  </table>
+  <table width=100% height=90%>
+    <tr>
+      <td valign=top>
+        <iframe name=display width=100% height=100%></iframe>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
