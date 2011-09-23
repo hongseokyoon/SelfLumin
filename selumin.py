@@ -1,7 +1,7 @@
 import tweepy
 import urllib
 import xml.etree.ElementTree as ET
-import time
+import datetime
 
 def user_timeline(user_id):
   twits = []
@@ -50,8 +50,8 @@ def user_timeline_me2(user_id):
     for post in xml.findall('post'):
       twit  = {}
       twit['text']      = post.find('textBody').text
-      twit['date']      = time.strptime(post.find('pubDate').text, '%Y-%m-%dT%H:%M:%S+0900')
-      twit['me2_count']  = post.find('metooCount').text
+      twit['date']      = datetime.datetime.strptime(post.find('pubDate').text, '%Y-%m-%dT%H:%M:%S+0900')
+      twit['me2_count'] = post.find('metooCount').text
     
       twits.append(twit)
     
@@ -63,6 +63,11 @@ def user_timeline_me2(user_id):
   return twits
   
 def split(l, n):
-  chunk_size  = len(l) / n
-  for i in range(0, chunk_size if chunk_size * n >= len(l) else chunk_size + 1):
-    yield l[i * n:i * n + n]
+  if len(l) < 2:      return None
+  if len(l) / n == 0: return [0, len(l) - 1]
+  ret = l[0:len(l):len(l)/n]
+  if ret[-1] != l[-1]:  ret.append(l[-1])
+  if len(ret) > n + 1 and len(ret) > 2:
+    ret.pop([len(ret) - 2])
+
+  return ret
