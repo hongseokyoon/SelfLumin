@@ -1,6 +1,7 @@
 import tweepy
 import urllib
 import xml.etree.ElementTree as ET
+import time
 
 def user_timeline(user_id):
   twits = []
@@ -49,8 +50,8 @@ def user_timeline_me2(user_id):
     for post in xml.findall('post'):
       twit  = {}
       twit['text']      = post.find('textBody').text
-      twit['date']      = None
-      twit['rt_count']  = None
+      twit['date']      = time.strptime(post.find('pubDate').text, '%Y-%m-%dT%H:%M:%S+0900')
+      twit['me2_count']  = post.find('metooCount').text
     
       twits.append(twit)
     
