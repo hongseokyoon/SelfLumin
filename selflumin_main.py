@@ -10,30 +10,40 @@ PostData = cgi.FieldStorage()
 PlatformType = PostData['platformtype'].value
 UserID = PostData['getid'].value
 TwitList = []
-
-if PlatformType == 'me2':
-  TwitList = selumin.user_timeline_me2(UserID)
-elif PlatformType == 'twitter':
-  TwitList = selumin.user_timeline(UserID)  
+try:
+  if PlatformType == 'me2':
+    TwitList = selumin.user_timeline_me2(UserID)
+  elif PlatformType == 'twitter':
+    TwitList = selumin.user_timeline(UserID)  
+except:
+  TwitList = []
   
 newdoc = xml.dom.minidom.Document()  
 TopNode = newdoc.createElement('twits')
 newdoc.appendChild(TopNode)
 
-def IndexSplit(List, n):
+def IndexSplit(List, n):  
+  retList = []
+  if len(List) <= 0:
+    return retList
   IndexLength = len(List) - 1
   Interval = ((IndexLength) / n)
-  retList = []
+  if Interval <= 1:
+    Interval = 2
+
   for i in range(n * 2):
     Index = i * Interval
     IndexNode = {}
+    TwitCurDate = ''
     if Index >= IndexLength or (IndexLength - Index) < (Interval / 2):
-      Twit = List[IndexLength]      
-      IndexNode[str(IndexLength)] = str(Twit['date'])
+      Twit = List[IndexLength]   
+      TwitCurDate = str(Twit['date'].year) + '.' + str(Twit['date'].month) + '.' + str(Twit['date'].day) + ' : ' + str(100.0) + '%'
+      IndexNode[str(IndexLength)] = TwitCurDate
       retList.append(IndexNode)
       break
     Twit = List[Index]      
-    IndexNode[str(Index)] = str(Twit['date'])
+    TwitCurDate = str(Twit['date'].year) + '.' + str(Twit['date'].month) + '.' + str(Twit['date'].day) + ' : ' + str(round((float(Index)/float(IndexLength))*100, 2)) + '%'
+    IndexNode[str(Index)] = TwitCurDate
     retList.append(IndexNode)
   return retList
 
@@ -59,7 +69,7 @@ print '<body>'
 print '<a href=./Download/' + UserID + '.zip>파일 다운로드</a><br>'
 for IndexNode in IndexList:
   for Index, Date in IndexNode.iteritems():
-    print '<a href=#' + Index + '>[' + ' ' + Date + ']</a>'
+    print '<a href=#' + Index + '>[' + Date + ']</a>'
 RTCount = 0
 Me2Count = 0
 PhotoUrl = None
