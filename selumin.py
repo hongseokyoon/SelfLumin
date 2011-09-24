@@ -32,7 +32,6 @@ def user_total_posts_me2(user_id):
   
 def user_timeline_me2(user_id):
   total_posts = user_total_posts_me2(user_id)
-  print total_posts
   
   twits = []
   
@@ -42,7 +41,6 @@ def user_timeline_me2(user_id):
   while True:
     url = 'http://me2day.net/api/get_posts/%s.xml?offset=%d&count=%d' % (user_id, offset, count)
     
-    print url
     res = urllib.urlopen(url)
     
     xml = ET.fromstring(res.read())
@@ -52,6 +50,11 @@ def user_timeline_me2(user_id):
       twit['text']      = post.find('textBody').text
       twit['date']      = datetime.datetime.strptime(post.find('pubDate').text, '%Y-%m-%dT%H:%M:%S+0900')
       twit['me2_count'] = post.find('metooCount').text
+      twit['photo_url'] = post.find('iconUrl')
+      if  twit['photo_url'] is None or twit['photo_url'].text is None:
+        twit['photo_url'] = ''
+      else:
+        twit['photo_url'] = (twit['photo_url'].text)[0:-9]
     
       twits.append(twit)
     
