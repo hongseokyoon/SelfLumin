@@ -10,6 +10,16 @@
         alert("ID를 입력해 주세요.");
         return 0;
       }
+      PlatformType = "";
+      if(document.mainform.platform[0].checked)
+      {
+        PlatformType = "me2"
+      }
+      else
+      {
+        PlatformType = "twitter"
+      }
+      document.mainform.platformtype.value = PlatformType;
       document.mainform.submit();
     }
   </script>
@@ -20,17 +30,18 @@
       <form name=mainform method=POST action="./selflumin_main.py" target=display>
       <td valign=middle>  
         <b>Team 자체발광 Burning Day Project</b><br><br>
-        * 미투데이<input type=radio name=platformtype checked>
-        : Twitter<input type=radio name=platformtype><br>
+        * 미투데이<input type=radio name=platform value=me2 checked>
+        : Twitter<input type=radio name=platform value=twitter><br>
         * 확인할 ID를 입력해 주세요 : <input type=text name=getid size=30>
         <input type=button name=getidbutton value="확인" onclick=SendID()>
+        <input type=hidden name=platformtype>
       </td>
       </form>
     </tr>
   </table>
   <table width=100% height=90%>
     <tr>
-      <td valign=top>
+      <td width=100% valign=top>
         <iframe name=display width=100% height=100%></iframe>
       </td>
     </tr>
