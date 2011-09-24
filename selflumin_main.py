@@ -127,10 +127,11 @@ for twit in TwitList:
   CountNode.appendChild(NewCount)
   
   if PlatformType == 'me2':
-    PhotoNode = newdoc.createElement('photourl')
-    TwitNode.appendChild(PhotoNode)
-    NewUrl = newdoc.createTextNode(PhotoUrl)
-    PhotoNode.appendChild(NewUrl)
+    if not PhotoUrl == '' and not PhotoUrl == None:
+      PhotoNode = newdoc.createElement('photourl')
+      TwitNode.appendChild(PhotoNode)
+      NewUrl = newdoc.createTextNode(PhotoUrl)
+      PhotoNode.appendChild(NewUrl)
   Index += 1
 print '</td>'
 print '</tr>'
